@@ -1,0 +1,42 @@
+import sys
+print("WELCOME TO OUR GENERAL CHATBOT")
+import anthropic    
+from anthropic import Anthropic
+# Instead of just .strip(), try this to remove all whitespace
+with open('api_key.txt', 'r') as f:
+    # Read the file and filter for only the essential characters
+    my_key = f.read().split()[0]
+
+# 2. Initialize the client with the key you just read
+client = anthropic.Anthropic(api_key=my_key)
+
+def add_user_message(message,text):
+    user_message={"role": "user", "content": text}
+    message.append(user_message)
+
+def add_assistant_message(message,text):
+    assistant_message={"role": "assistant", "content": text}
+    message.append(assistant_message)
+    
+# 3. Make the call
+def chat(messages):
+    message = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1000,
+    messages=messages,)
+    return message.content[0].text
+for i in range(100):    
+    
+    tst=input("Enter a question or STOP :").upper()
+    if tst == "STOP":
+        print("Shutting down chatbot...")
+        sys.exit()  # Stops the entire script immediately
+    else:
+        print("Continuing program...")
+        messages=[]
+        add_user_message(messages,tst)
+        answer=chat(messages)
+        add_assistant_message(messages,answer)
+        add_user_message(messages,"write another paragraph")
+        answer=chat(messages)
+        print(answer)
